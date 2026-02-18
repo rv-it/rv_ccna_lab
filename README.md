@@ -1,5 +1,11 @@
 # CCNA Packet Tracer Lab
 
+## Lab Notes
+
+- Routing protocols may require time to converge after startup.
+- Ensure hosts are configured as DHCP clients.
+- Area 0 and Area 2 documentation will be added soon.
+
 ## OVERVIEW
 
 ![access layer](pictures/infra_all.png)
