@@ -18,7 +18,7 @@
 - EtherChannel (LACP)
 - STP (RPVST+)
 - Router-on-a-Stick
-- Spine–Leaf data center
+- Spine–Leaf
 - Dual ISP connectivity
 - NAT
 - DNS
