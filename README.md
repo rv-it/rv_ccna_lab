@@ -2,7 +2,7 @@
 
 ## Lab Notes
 
-- Routing protocols may require time to converge after startup.
+- The infrastructure requires time to become fully operational (around 3 minutes but you can accelerate the simulation time).
 - Ensure hosts are configured as DHCP clients.
 - Area 0 and Area 2 documentation will be added soon.
 
