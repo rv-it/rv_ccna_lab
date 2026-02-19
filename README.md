@@ -21,6 +21,8 @@
 - Spine–Leaf data center
 - Dual ISP connectivity
 - NAT
+- DNS
+- DHCP
 
 ## Topology Description
 
@@ -165,13 +167,13 @@ show spanning-tree
 
 # Collapsed Distribution and Core Layer
 
-This layer aggregates access switches and provides redundancy.
+This layer is an aggregation point for access switches and provides redundancy.
 
 No end hosts are connected here.
 
 ![access layer](pictures/distri_core_layer.png)
 
-Core and Distribution layers are collapsed for simplicity.
+Core and Distribution layers aren't separated for simplicity (small campus).
 
 ---
 
@@ -179,15 +181,13 @@ Core and Distribution layers are collapsed for simplicity.
 
 ![access layer](pictures/spanning_tree_root_rio.png)
 
-Spanning Tree elects a **root bridge**.
+Spanning Tree elects a **root bridge** which is the reference point used to calculate loop-free paths.
+You can define the root bridge as primary and secondary. If the primary root bridge fails, the secondary will take over.
 
 By default:
 
 - Lowest priority wins  
 - If equal, lowest MAC address wins  
-
-Best practice:  
-Synchronize **Root Bridge** with **Active HSRP Router**.
 
 Example:
 
@@ -199,7 +199,10 @@ spanning-tree vlan 20 root secondary
 In this lab:
 
 - sw01 → Primary for VLAN10 & VLAN30  
-- sw02 → Primary for VLAN20 & VLAN333  
+- sw02 → Primary for VLAN20 & VLAN333
+
+Best practice:  
+Synchronize **Root Bridge** with **Active HSRP Router**.
 
 ![access layer](pictures/hsrp_root_bridge.png)
 
@@ -315,7 +318,7 @@ router ospf 1
 Passive-interface:
 
 - Advertises network  
-- Does not form adjacency  
+- Does not form adjacency (useful for third-party routers) 
 
 default-information originate: 
 
@@ -325,8 +328,8 @@ default-information originate:
 Useful command:
 
 ```bash
-show ospf interface
-show ospf neighbor
+show ip ospf interface
+show ip ospf neighbor
 ```
 
 ---
@@ -370,20 +373,21 @@ Security policy:
 
 ```bash
 ip access-list extended vlan_10
- deny ip 192.168.10.0 0.0.0.255 192.168.33.0 0.0.0.255
- deny ip 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255
- permit tcp 192.168.10.0 0.0.0.255 host 10.2.120.1 eq 443
- permit udp 192.168.10.0 0.0.0.255 host 10.2.110.2 eq domain
- permit icmp 192.168.10.0 0.0.0.255 host 10.2.110.1 echo
- permit icmp 192.168.10.0 0.0.0.255 host 10.2.110.2 echo
- permit icmp 192.168.10.0 0.0.0.255 host 10.2.120.1 echo
- deny ip 192.168.10.0 0.0.0.255 host 10.2.120.1
- deny ip 192.168.10.0 0.0.0.255 host 10.2.110.1
- deny ip 192.168.10.0 0.0.0.255 host 10.2.110.2
- permit icmp 192.168.10.0 0.0.0.255 192.168.30.0 0.0.0.255 echo-reply
- permit tcp 192.168.10.0 0.0.0.255 192.168.30.0 0.0.0.255 established
- deny ip 192.168.10.0 0.0.0.255 192.168.30.0 0.0.0.255
- permit ip 192.168.10.0 0.0.0.255 any
+permit udp any eq bootpc any eq bootps
+permit tcp 192.168.10.0 0.0.0.255 host 10.2.120.1 eq 443
+permit udp 192.168.10.0 0.0.0.255 host 10.2.110.2 eq domain
+permit icmp 192.168.10.0 0.0.0.255 host 10.2.120.1 echo
+permit icmp 192.168.10.0 0.0.0.255 host 10.2.110.1 echo
+permit icmp 192.168.10.0 0.0.0.255 host 10.2.110.2 echo
+deny ip 192.168.10.0 0.0.0.255 host 10.2.120.1
+deny ip 192.168.10.0 0.0.0.255 host 10.2.110.1
+deny ip 192.168.10.0 0.0.0.255 host 10.2.110.2
+permit icmp 192.168.10.0 0.0.0.255 192.168.30.0 0.0.0.255 echo-reply
+permit tcp 192.168.10.0 0.0.0.255 192.168.30.0 0.0.0.255 established
+deny ip 192.168.10.0 0.0.0.255 192.168.30.0 0.0.0.255
+deny ip 192.168.10.0 0.0.0.255 192.168.33.0 0.0.0.255
+deny ip 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255
+permit ip 192.168.10.0 0.0.0.255 any
 ```
 
 
@@ -393,6 +397,9 @@ Applied to interface:
 interface FastEthernet1/0.10
  ip access-group vlan_10 in
 ```
+
+The ACL is applied inbound on the VLAN10 subinterface to filter traffic close to the source.
+
 
 Useful command:
 
