@@ -20,6 +20,7 @@
 - Router-on-a-Stick
 - Spine–Leaf
 - Dual ISP connectivity
+- ACL
 - NAT
 - DNS
 - DHCP
@@ -215,9 +216,10 @@ Synchronize **Root Bridge** with **Active HSRP Router**.
 These routers provide:
 
 - Inter-VLAN routing  
-- HSRP redundancy  
-- NAT  
-- OSPF connectivity  
+- HSRP redundancy
+- OSPF connectivity 
+- ACL  
+- NAT   
 
 ---
 
@@ -365,11 +367,11 @@ This ACL restricts user traffic from VLAN10.
 Security policy:
 - No direct access to other user VLANs.
 - Access allowed only to specific infrastructure services:
-  - DNS server
+  - DHCP server
   - External HTTPS web server
+  - DNS server
 - ICMP allowed for testing.
 - IT VLAN (VLAN30) can initiate connections to users.
-- All other traffic is denied by default.
 
 ```bash
 ip access-list extended vlan_10
