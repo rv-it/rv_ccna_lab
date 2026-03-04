@@ -468,7 +468,7 @@ In this design:
 - Spine switches connect all Leaf switches
 - Border Leaf switches provide connectivity to the OSPF backbone (Area 0)
 - All links are Layer 3 (no trunk between switches)
-- No Spanning Tree is required (no blocked port, fast convergence)
+- No Spanning Tree is required (no blocked port, better convergence)
 - No HSRP is required
 - Redundancy and load balancing are handled by OSPF
 
@@ -581,10 +581,10 @@ Configuration:
 
 Records used is this lab:
 
-- SOA: Start of Authority (main zone configuration)
-- NS: Authoritative name servers
-- A record: Maps name to IPv4 address
-- CNAME: Alias to another domain name
+- SOA      -> Start of Authority (main zone configuration)
+- NS       -> Authoritative name servers
+- A record -> Maps name to IPv4 address
+- CNAME    -> Alias to another domain name
 
 ### Web Server
 
