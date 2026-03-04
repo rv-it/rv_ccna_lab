@@ -524,8 +524,6 @@ Same OSPF logic as AREA1, but using Area 2.
 
 ## Application Servers
 
----
-
 ### DHCP
 
 DHCP (Dynamic Host Configuration Protocol) automatically assigns:
