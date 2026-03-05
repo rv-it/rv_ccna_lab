@@ -596,3 +596,81 @@ This allows external users to access the internal web service securely.
 
 ![capture](pictures/webserver1.png)
 ![capture](pictures/webserver2.png)
+
+---
+
+# AREA0
+
+AREA0 is the OSPF backbone.  
+The backbone handles inter-area traffic and allows route summarization between areas through ABRs, which helps reduce routing table size.  
+All inter-area traffic must pass through the backbone.  
+This design improves scalability, because multiple areas can connect to the backbone.    
+
+---
+
+## ABR backbone (only ABRs in this lab)
+
+An Area Border Router (ABR) connects two different OSPF areas.
+
+It has:
+
+- at least one interface in Area 0 (backbone)
+- at least one interface in another area
+
+ABRs are responsible for exchanging routing information between areas and can perform route summarization.
+
+Configuration (rtr03):
+
+```bash
+router ospf 1
+area 1 range 10.1.0.0 255.255.0.0
+area 1 range 192.168.0.0 255.255.0.0
+passive-interface Loopback0
+auto-cost reference-bandwidth 100000
+network 10.1.0.0 0.0.255.255 area 1
+network 10.0.0.0 0.0.255.255 area 0
+network 172.31.255.3 0.0.0.0 area 0
+ ```
+
+In this configuration:
+
+- some networks belong to Area 1
+- backbone network and the router loopback belong to Area 0
+
+**Route Summarization**
+
+Route summarization reduces the number of routes exchanged between areas.
+
+It is configured on the ABR using the command:
+
+```area <area-id> range <network> <mask>```
+
+The summary network should include multiple smaller networks.
+
+Example:
+
+```area 1 range 10.1.0.0 255.255.0.0```
+
+This summarizes networks included in this range into a single route.
+
+**Exemple Routing Table (rtr01)**
+
+Exemple of routing table with summarization:
+
+![capture](pictures/rt_sum.png)
+
+And without (no passive interface too):
+
+![capture](pictures/rt_no_sum.png)
+
+**Example Area2 from Area1 (rtr01)**
+
+Without summarization, multiple routes from Area 2 appear in the routing table:
+
+![capture](pictures/rt_no_sum_2.png)
+
+With summarization, they are grouped into a single route:
+
+![capture](pictures/rt_sum_2.png)
+
+---
